@@ -1,0 +1,193 @@
+<div fxFill>
+  <div layout="column" layout-fill *ngIf="!onEdit">
+    <div align="center" layout="row" layout-align="center center">
+      <mat-card class="info-card mat-elevation-z8" flex="80" style="margin-top: 10px;width: 90%;">
+  
+        <mat-card-title>
+          
+        </mat-card-title>
+        <mat-card-subtitle>
+          
+        </mat-card-subtitle>      
+        <mat-card-content fxLayout="column" fxLayoutAlign="stretch" >
+          <div fxFlex="100" fxLayout="row" fxLayoutAlign="space-between start">
+            <mat-form-field fxFlex="30" >  
+              <input matInput type="text" 
+                class="form-control" value="" placeholder="Pesquisar pela Razão Social" [formControl]="razao"
+                (keyup)="filterRazao($event)">
+            </mat-form-field> 
+            <mat-form-field fxFlex="30">
+              <input matInput type="text" 
+                class="form-control" value="" placeholder="Pesquisar pela nome Fantasia" [formControl]="fantasia"
+                (keyup)="filterFantasia($event)">
+            </mat-form-field>
+            <button mat-raised-button color="primary" (click)="novo()"><mat-icon>add</mat-icon>Nova Intituição</button> 
+            
+          </div>        
+          
+          
+          <div fxFlex="100" fxLayout="row" fxLayoutAlign="space-between start">
+            <mat-divider></mat-divider>
+            <table mat-table [dataSource]="instituicoes$ | async" style="width: 100%">
+              <ng-container matColumnDef="razao">
+                <th mat-header-cell *matHeaderCellDef>Razão</th>
+                <td mat-cell *matCellDef="let element">{{element.razao}}</td>
+              </ng-container>
+              <ng-container matColumnDef="fantasia">
+                <th mat-header-cell *matHeaderCellDef>Fantasia</th>
+                <td mat-cell *matCellDef="let element">{{element.fantasia}}</td>
+              </ng-container>
+              <ng-container matColumnDef="cnpj">
+                <th mat-header-cell *matHeaderCellDef>CNPJ</th>
+                <td mat-cell *matCellDef="let element">{{element.cnpj}}</td>
+              </ng-container>
+              <ng-container matColumnDef="endereco">
+                <th mat-header-cell *matHeaderCellDef>Endereço</th>
+                <td mat-cell *matCellDef="let element">{{element.endereco}}</td>
+              </ng-container>
+              <ng-container matColumnDef="telefone1">
+                <th mat-header-cell *matHeaderCellDef>Telefone</th>
+                <td mat-cell *matCellDef="let element">{{element.telefone1}}</td>
+              </ng-container>
+              <ng-container matColumnDef="telefone2">
+                <th mat-header-cell *matHeaderCellDef>Telefone 2</th>
+                <td mat-cell *matCellDef="let element">{{element.telefone2}}</td>
+              </ng-container>
+              <ng-container matColumnDef="acoes">
+                <th mat-header-cell *matHeaderCellDef></th>
+                <td mat-cell *matCellDef="let element"> 
+                  <button mat-button color="primary" (click)="edit(element)"><mat-icon>editar</mat-icon> </button>
+                  <button mat-button color="accent"  (click)="del(element)"><mat-icon>delete</mat-icon> </button>
+                </td>
+              </ng-container>      
+              <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr> 
+            </table>
+          </div>       
+
+        
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+
+  </div>
+  <div class="table-container mat-elevation-z8" >
+    
+
+  </div >
+  <!--edit-->
+  <div layout="column" layout-fill *ngIf="onEdit">
+    <div align="center" layout="row" layout-align="center center">
+      <mat-card class="info-card mat-elevation-z8" flex="80" style="margin-top: 60px;width: 800px;">
+          <mat-card-title></mat-card-title>
+          <mat-card-subtitle>
+          </mat-card-subtitle>
+          <mat-card-content fxLayout="column" fxLayoutAlign="stretch" >
+            <form [formGroup]="instituicaoForm" (ngSubmit)="onSubmit()" fxLayout="column" 
+              fxLayoutAlign="space-around stretch">
+              <div fxFlex="100" fxLayout="row" fxLayoutAlign="space-between start">
+                <mat-form-field fxFlex="45">
+                  <input matInput type="text" autocomplete="off" formControlName="razao" 
+                  placeholder="Informe a Razão">
+                  <mat-error *ngIf="instituicaoForm.controls.razao.hasError('required')">
+                    Por favor informe a Razão Social
+                  </mat-error>
+                  <mat-error *ngIf="instituicaoForm.controls.razao.hasError('minlength')">
+                    Por favor informe no mínimo 3 Letras
+                  </mat-error>
+                </mat-form-field>
+                <mat-form-field fxFlex="45">
+                  <input matInput type="text" autocomplete="off" formControlName="fantasia" placeholder="Informe a Fantasia">
+                  <mat-error *ngIf="instituicaoForm.controls.fantasia.hasError('required')">
+                    Por favor informe o nome Fantasia
+                  </mat-error>
+                  <mat-error *ngIf="instituicaoForm.controls.fantasia.hasError('minlength')">
+                    Por favor informe no mínimo 3 Letras
+                  </mat-error>
+                </mat-form-field>
+              </div>
+              <div fxFlex="100" fxLayout="row" fxLayoutAlign="start start">
+                <mat-form-field fxFlex="20" class="margin-left">
+                  <input type="text" matInput autocomplete="off" formControlName="cnpj" placeholder="Informe o CNPJ">
+                  <mat-error *ngIf="instituicaoForm.controls.cnpj.hasError('required')">
+                    Por favor informe o CNPJ
+                  </mat-error>
+                </mat-form-field>
+                <mat-form-field fxFlex="20" class="margin-left">
+                  <input type="text" matInput  autocomplete="off" formControlName="telefone1" placeholder="Informe o Telefone">
+                  <mat-error *ngIf="instituicaoForm.controls.telefone1.hasError('required')">
+                    Por favor informe o Telefone
+                  </mat-error>
+                </mat-form-field>
+                <mat-form-field fxFlex="20" class="margin-left">
+                  <input type="text" matInput autocomplete="off" formControlName="telefone2" placeholder="Informe o Telefone 2">
+                  <mat-error *ngIf="instituicaoForm.controls.telefone2.hasError('required')">
+                    Por favor informe o Telefone 2
+                  </mat-error>
+                </mat-form-field>
+                <mat-form-field fxFlex="35">
+                  <input type="text" matInput autocomplete="off" formControlName="cidade" placeholder="Informe a Cidade">
+                  <mat-error *ngIf="instituicaoForm.controls.cidade.hasError('required')">
+                    Por favor informe a Cidade
+                  </mat-error>
+                </mat-form-field>
+              </div>
+              <div fxFlex="100" fxLayout="row" fxLayoutAlign="start start">
+                <mat-form-field fxFlex="40" class="margin-left">
+                  <input type="text" matInput autocomplete="off" formControlName="endereco" placeholder="Informe o Endereço">
+                  <mat-error *ngIf="instituicaoForm.controls.endereco.hasError('required')">
+                    Por favor informe o Endereço
+                  </mat-error>
+                  <mat-error *ngIf="instituicaoForm.controls.endereco.hasError('minlength')">
+                    Por favor informe no mínimo 5 Letras
+                  </mat-error>
+                </mat-form-field>
+                <mat-form-field fxFlex="30" class="margin-left">
+                  <input type="text" matInput autocomplete="off" formControlName="bairro" placeholder="Informe o Bairro">
+                  <mat-error *ngIf="instituicaoForm.controls.bairro.hasError('required')">
+                    Por favor informe o Bairro
+                  </mat-error>
+                  <mat-error *ngIf="instituicaoForm.controls.bairro.hasError('minlength')">
+                    Por favor informe no mínimo 3 Letras
+                  </mat-error>
+                </mat-form-field>
+                <mat-form-field fxFlex="20" >
+                  <input type="number" matInput autocomplete="off" formControlName="numero" placeholder="Informe o Número">
+                  <mat-error *ngIf="instituicaoForm.controls.numero.hasError('required')">
+                    Por favor informe o Número
+                  </mat-error>
+                  <mat-error *ngIf="instituicaoForm.controls.numero.hasError('minlength')">
+                    Por favor informe no mínimo 3 Letras
+                  </mat-error>
+                </mat-form-field>
+              </div>
+              <div fxFlex="100" fxLayout="row" fxLayoutAlign="start start">
+                <mat-form-field fxFlex="50" >
+                  <input type="email" matInput autocomplete="off" formControlName="email" placeholder="Informe o Email">
+                  <mat-error *ngIf="instituicaoForm.controls.email.hasError('required')">
+                    Por favor informe o Número
+                  </mat-error>
+                  <mat-error *ngIf="instituicaoForm.controls.email.hasError('email')">
+                    Informe um email Válido
+                  </mat-error>
+                </mat-form-field>
+              </div>
+              <div fxFlex="100" fxLayout="row" fxLayoutAlign="center center">
+                  <button  mat-button color="primary"  type="submit" [disabled]="!instituicaoForm.valid">Salvar</button>          
+                  <button mat-button color="warn"  (click)="cancel()">Cancel</button>
+              </div>  
+
+            </form>
+
+          </mat-card-content>
+
+      </mat-card>
+    </div>
+
+  </div>
+
+
+
+ 
+</div>
